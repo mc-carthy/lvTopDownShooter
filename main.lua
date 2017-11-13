@@ -8,11 +8,11 @@ function love.load()
   player = {}
   player.x = 200
   player.y = 200
-  player.speed = 1
+  player.speed = 150
 end
 
 function love.update(dt)
-  movePlayer()
+  movePlayer(dt)
 end
 
 function love.draw()
@@ -20,17 +20,17 @@ function love.draw()
   love.graphics.draw(sprites.player, player.x, player.y)
 end
 
-function movePlayer()
+function movePlayer(dt)
   if (love.keyboard.isDown("w")) then
-    player.y = player.y - player.speed
+    player.y = player.y - (player.speed * dt)
   end
   if (love.keyboard.isDown("a")) then
-    player.x = player.x - player.speed
+    player.x = player.x - (player.speed * dt)
   end
   if (love.keyboard.isDown("s")) then
-    player.y = player.y + player.speed
+    player.y = player.y + (player.speed * dt)
   end
   if (love.keyboard.isDown("d")) then
-    player.x = player.x + player.speed
+    player.x = player.x + (player.speed * dt)
   end
 end
