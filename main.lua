@@ -15,6 +15,7 @@ end
 
 function love.update(dt)
   movePlayer(dt)
+  moveZombies(dt)
 end
 
 function love.draw()
@@ -40,6 +41,13 @@ function movePlayer(dt)
   end
   if (love.keyboard.isDown("d")) then
     player.x = player.x + (player.speed * dt)
+  end
+end
+
+function moveZombies(dt)
+  for i,z in ipairs(zombies) do
+    z.x = z.x + math.cos(zombie_player_angle(z))
+    z.y = z.y + math.sin(zombie_player_angle(z))
   end
 end
 
