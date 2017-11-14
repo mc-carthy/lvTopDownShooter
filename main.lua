@@ -46,8 +46,9 @@ end
 
 function moveZombies(dt)
   for i,z in ipairs(zombies) do
-    z.x = z.x + math.cos(zombie_player_angle(z))
-    z.y = z.y + math.sin(zombie_player_angle(z))
+    z.x = z.x + (math.cos(zombie_player_angle(z)) * z.speed * dt)
+    z.y = z.y + (math.sin(zombie_player_angle(z)) * z.speed * dt)
+    checkPlayerCollision(z)
   end
 end
 
@@ -70,5 +71,22 @@ end
 function love.keypressed(key, scancode, isrepeat)
   if (key == "space") then
     spawn_zombie()
+  end
+end
+
+function distance(x1, y1, x2, y2)
+  return math.sqrt((y2 - y1)^2 + (x2 - x1)^2)
+end
+
+function checkPlayerCollision(other)
+  -- TODO remove the hard-coded value of 30, replace with player collision radius
+  if (distance(player.x, player.y, other.x, other.y) < 30) then
+    clearZombies()
+  end
+end
+
+function clearZombies()
+  for i,z in ipairs(zombies) do
+    zombies[i] = nil
   end
 end
