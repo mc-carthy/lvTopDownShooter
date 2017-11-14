@@ -18,6 +18,7 @@ function love.update(dt)
   movePlayer(dt)
   moveZombies(dt)
   moveBullets(dt)
+  clearOffScreenBullets()
 end
 
 function love.draw()
@@ -30,6 +31,8 @@ function love.draw()
   for i, b in ipairs(bullets) do
     love.graphics.draw(sprites.bullet, b.x, b.y, nil, 0.5, 0.5, sprites.bullet:getWidth() / 2, sprites.bullet:getHeight() / 2)
   end
+
+  love.graphics.print("Bullet count: " .. #bullets)
 
   love.graphics.draw(sprites.player, player.x, player.y, player_mouse_angle(), nil, nil, sprites.player:getWidth() / 2, sprites.player:getHeight() / 2)
 end
@@ -118,4 +121,22 @@ function clearZombies()
   for i,z in ipairs(zombies) do
     zombies[i] = nil
   end
+end
+
+function clearOffScreenBullets()
+  for i=#bullets, 1, -1 do
+    local b = bullets[i]
+    if (isWithinViewport(b.x, b.y) == false) then
+      table.remove(bullets, i)
+    end
+  end
+end
+
+function isWithinViewport(x, y)
+  return (
+    x >= 0 and
+    x <= love.graphics.getWidth() and
+    y >= 0 and
+    y <= love.graphics.getHeight()
+  )
 end
