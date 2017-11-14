@@ -14,15 +14,23 @@ function love.load()
   zombie_spawn_border = 30
 
   bullets = {}
+
+  gameState = 2
+
+  maxTime = 2
+  timer = maxTime
 end
 
 function love.update(dt)
-  movePlayer(dt)
-  moveZombies(dt)
-  moveBullets(dt)
-  check_bullet_zombie_collision()
-  clearDeadEntities()
-  clearOffScreenBullets()
+  if (gameState == 2) then
+    movePlayer(dt)
+    moveZombies(dt)
+    moveBullets(dt)
+    check_bullet_zombie_collision()
+    clearDeadEntities()
+    clearOffScreenBullets()
+    reduceTimer(dt)
+  end
 end
 
 function love.draw()
@@ -189,4 +197,13 @@ function isWithinViewport(x, y)
     y >= 0 and
     y <= love.graphics.getHeight()
   )
+end
+
+function reduceTimer(t)
+  timer = timer - t
+  if (timer < 0) then
+    spawn_zombie()
+    maxTime = maxTime * 0.95
+    timer = maxTime
+  end
 end
