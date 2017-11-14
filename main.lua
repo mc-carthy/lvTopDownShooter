@@ -9,6 +9,8 @@ function love.load()
   player.x = 200
   player.y = 200
   player.speed = 150
+
+  zombies = {}
 end
 
 function love.update(dt)
@@ -18,6 +20,10 @@ end
 function love.draw()
   love.graphics.draw(sprites.background, 0, 0)
   love.graphics.draw(sprites.player, player.x, player.y, player_mouse_angle(), nil, nil, sprites.player:getWidth() / 2, sprites.player:getHeight() / 2)
+
+  for i, z in ipairs(zombies) do
+    love.graphics.draw(sprites.zombie, z.x, z.y)
+  end
 end
 
 function movePlayer(dt)
@@ -38,4 +44,18 @@ end
 
 function player_mouse_angle()
   return math.atan2(love.mouse.getY() - player.y, love.mouse.getX() - player.x)
+end
+
+function spawn_zombie()
+  zombie = {}
+  zombie.x = 0
+  zombie.y = 0
+  zombie.speed = 100
+  table.insert(zombies, zombie)
+end
+
+function love.keypressed(key, scancode, isrepeat)
+  if (key == "space") then
+    spawn_zombie()
+  end
 end
