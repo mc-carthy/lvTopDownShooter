@@ -11,11 +11,13 @@ function love.load()
   player.speed = 150
 
   zombies = {}
+  bullets = {}
 end
 
 function love.update(dt)
   movePlayer(dt)
   moveZombies(dt)
+  moveBullets(dt)
 end
 
 function love.draw()
@@ -23,6 +25,10 @@ function love.draw()
 
   for i, z in ipairs(zombies) do
     love.graphics.draw(sprites.zombie, z.x, z.y, zombie_player_angle(z), nil, nil, sprites.zombie:getWidth() / 2, sprites.zombie:getHeight() / 2)
+  end
+
+  for i, b in ipairs(bullets) do
+    love.graphics.draw(sprites.bullet, b.x, b.y, nil, 0.5, 0.5, sprites.bullet:getWidth() / 2, sprites.bullet:getHeight() / 2)
   end
 
   love.graphics.draw(sprites.player, player.x, player.y, player_mouse_angle(), nil, nil, sprites.player:getWidth() / 2, sprites.player:getHeight() / 2)
@@ -52,6 +58,13 @@ function moveZombies(dt)
   end
 end
 
+function moveBullets(dt)
+  for i,b in ipairs(bullets) do
+    b.x = b.x + (math.cos(b.direction) * b.speed * dt)
+    b.y = b.y + (math.sin(b.direction) * b.speed * dt)
+  end
+end
+
 function player_mouse_angle()
   return math.atan2(love.mouse.getY() - player.y, love.mouse.getX() - player.x)
 end
@@ -68,9 +81,25 @@ function spawn_zombie()
   table.insert(zombies, zombie)
 end
 
+function spawn_bullet()
+  bullet = {}
+  bullet.x = player.x
+  bullet.y = player.y
+  bullet.speed = 500
+  bullet.direction = player_mouse_angle()
+
+  table.insert(bullets, bullet)
+end
+
 function love.keypressed(key, scancode, isrepeat)
   if (key == "space") then
     spawn_zombie()
+  end
+end
+
+function love.mousepressed(x, y, button, isTouch)
+  if (button == 1) then
+    spawn_bullet()
   end
 end
 
