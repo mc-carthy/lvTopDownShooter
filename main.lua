@@ -19,11 +19,12 @@ end
 
 function love.draw()
   love.graphics.draw(sprites.background, 0, 0)
-  love.graphics.draw(sprites.player, player.x, player.y, player_mouse_angle(), nil, nil, sprites.player:getWidth() / 2, sprites.player:getHeight() / 2)
 
   for i, z in ipairs(zombies) do
-    love.graphics.draw(sprites.zombie, z.x, z.y)
+    love.graphics.draw(sprites.zombie, z.x, z.y, zombie_player_angle(z), nil, nil, sprites.zombie:getWidth() / 2, sprites.zombie:getHeight() / 2)
   end
+
+  love.graphics.draw(sprites.player, player.x, player.y, player_mouse_angle(), nil, nil, sprites.player:getWidth() / 2, sprites.player:getHeight() / 2)
 end
 
 function movePlayer(dt)
@@ -46,10 +47,14 @@ function player_mouse_angle()
   return math.atan2(love.mouse.getY() - player.y, love.mouse.getX() - player.x)
 end
 
+function zombie_player_angle(enemy)
+  return math.atan2(player.y - enemy.y, player.x - enemy.x)
+end
+
 function spawn_zombie()
   zombie = {}
-  zombie.x = 0
-  zombie.y = 0
+  zombie.x = math.random(0, love.graphics.getWidth())
+  zombie.y = math.random(0, love.graphics.getHeight())
   zombie.speed = 100
   table.insert(zombies, zombie)
 end
