@@ -6,8 +6,8 @@ function love.load()
   sprites.background = love.graphics.newImage('sprites/background.png')
 
   player = {}
-  player.x = 200
-  player.y = 200
+  player.x = love.graphics.getWidth() / 2
+  player.y = love.graphics.getHeight() / 2
   player.speed = 150
 
   zombies = {}
@@ -15,10 +15,13 @@ function love.load()
 
   bullets = {}
 
-  gameState = 2
+  gameState = 1
 
   maxTime = 2
   timer = maxTime
+  score = 0
+
+  myFont = love.graphics.newFont(40)
 end
 
 function love.update(dt)
@@ -36,6 +39,13 @@ end
 function love.draw()
   love.graphics.draw(sprites.background, 0, 0)
 
+  if (gameState == 1) then
+    love.graphics.setFont(myFont)
+    love.graphics.printf("Click anywhere to begin!", 0, 50, love.graphics.getWidth(), "center")
+  end
+
+  love.graphics.printf("Score: " .. score, 0, love.graphics.getHeight() - 100, love.graphics.getWidth(), "center")
+
   for i, z in ipairs(zombies) do
     love.graphics.draw(sprites.zombie, z.x, z.y, zombie_player_angle(z), nil, nil, sprites.zombie:getWidth() / 2, sprites.zombie:getHeight() / 2)
   end
@@ -44,23 +54,21 @@ function love.draw()
     love.graphics.draw(sprites.bullet, b.x, b.y, nil, 0.5, 0.5, sprites.bullet:getWidth() / 2, sprites.bullet:getHeight() / 2)
   end
 
-  love.graphics.print("Bullet count: " .. #bullets)
-
   love.graphics.draw(sprites.player, player.x, player.y, player_mouse_angle(), nil, nil, sprites.player:getWidth() / 2, sprites.player:getHeight() / 2)
 end
 
 function movePlayer(dt)
   -- TODO - Normalise movement vector so diagonal movement isn't faster
-  if (love.keyboard.isDown("w")) then
+  if (love.keyboard.isDown("w") and player.y > 0) then
     player.y = player.y - (player.speed * dt)
   end
-  if (love.keyboard.isDown("a")) then
+  if (love.keyboard.isDown("a") and player.x > 0) then
     player.x = player.x - (player.speed * dt)
   end
-  if (love.keyboard.isDown("s")) then
+  if (love.keyboard.isDown("s") and player.y < love.graphics.getHeight()) then
     player.y = player.y + (player.speed * dt)
   end
-  if (love.keyboard.isDown("d")) then
+  if (love.keyboard.isDown("d") and player.x < love.graphics.getWidth()) then
     player.x = player.x + (player.speed * dt)
   end
 end
@@ -131,6 +139,7 @@ function check_bullet_zombie_collision()
       if (distance(z.x, z.y, b.x, b.y) < 20) then
         z.dead = true
         b.dead = true
+        score = score + 1
       end
     end
   end
@@ -143,7 +152,12 @@ function love.keypressed(key, scancode, isrepeat)
 end
 
 function love.mousepressed(x, y, button, isTouch)
-  if (button == 1) then
+  if (gameState == 1) then
+    gameState = 2
+    maxTime = 2
+    timer = maxTime
+    score = 0
+  elseif (button == 1 and gameState == 2) then
     spawn_bullet()
   end
 end
@@ -156,6 +170,9 @@ function checkPlayerCollision(other)
   -- TODO remove the hard-coded value of 30, replace with player collision radius
   if (distance(player.x, player.y, other.x, other.y) < 30) then
     clearZombies()
+    gameState = 1
+    player.x = love.graphics.getWidth() / 2
+    player.y = love.graphics.getHeight() / 2
   end
 end
 
